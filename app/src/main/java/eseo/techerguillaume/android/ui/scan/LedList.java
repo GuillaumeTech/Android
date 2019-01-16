@@ -32,6 +32,7 @@ public class LedList extends AppCompatActivity {
     private final ApiService apiService = ApiService.Builder.getInstance();
     private ArrayList<LedStatus> leds = new ArrayList<>();
     private LedAdapter adapter;
+    private Handler handler;
 
 
     @Override
@@ -46,16 +47,29 @@ public class LedList extends AppCompatActivity {
         listView.setClickable(true);
         listView.setOnItemClickListener(handleLedClick);
 
+        handler = new Handler();
+        Runnable runnable = new Runnable() {
+
+            @Override
+        public void run() {
+            try{
+                adapter.clear();
+                listLeds();
+            }
+            catch (Exception e) {
+
+            }
+            finally{
+                handler.postDelayed(this, 10000);
+            }
+        }
+    };
+
+//runnable must be execute once
+        handler.post(runnable);
+
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        adapter.clear();
-        listLeds();
 
-
-
-    }
 
     AdapterView.OnItemClickListener handleLedClick = (parent, view, position, id) -> {
         final LedStatus ledStatus = adapter.getItem(position);
